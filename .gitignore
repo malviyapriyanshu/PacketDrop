@@ -1,0 +1,10 @@
+node_modules/
+uploads/*
+!uploads/.gitkeep
+.env
+.env*
+backend/data/history.json
+backend/uploads/*
+backend/target/
+.DS_Store
+*.log
