@@ -9,24 +9,24 @@ PacketDrop is a high-speed file sharing application that works entirely over you
 ```
                  ┌─────────────────────────┐
                  │     React Frontend      │
-                 │  (TypeScript + Tailwind) │
-                 │       :5173 (dev)        │
+                 │  (TypeScript + Tailwind)│
+                 │       :5173 (dev)       │
                  └─────────┬───────────────┘
                            │ /api/* proxy
                  ┌─────────▼───────────────┐
                  │   Spring Boot Backend   │
-                 │    (Java 21 + Maven)     │
-                 │        :8080             │
+                 │    (Java 21 + Maven)    │
+                 │        :8080            │
                  ├─────────────────────────┤
-                 │ REST API  │  WebSocket   │
-                 │ /api/*    │  /ws (STOMP) │
+                 │ REST API  │  WebSocket  │
+                 │ /api/*    │  /ws (STOMP)│
                  ├─────────────────────────┤
                  │ Services:               │
-                 │ · FileStorage (Stream)   │
-                 │ · Checksum (SHA-256)     │
-                 │ · QR Code (ZXing)        │
-                 │ · mDNS (JmDNS)           │
-                 │ · History (JSON)         │
+                 │ · FileStorage (Stream)  │
+                 │ · Checksum (SHA-256)    │
+                 │ · QR Code (ZXing)       │
+                 │ · mDNS (JmDNS)          │
+                 │ · History (JSON)        │
                  └─────────────────────────┘
 ```
 
