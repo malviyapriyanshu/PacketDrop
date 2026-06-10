@@ -21,21 +21,29 @@ export function formatETA(seconds: number): string {
   return `${hrs}h ${mins % 60}m`;
 }
 
-const FILE_ICONS: Record<string, string> = {
-  image: '🖼️', video: '🎬', audio: '🎵', pdf: '📄',
-  zip: '📦', code: '💻', text: '📝', default: '📎',
-};
+export type FileIconName = 'image' | 'film' | 'music' | 'file-text' | 'archive' | 'code' | 'file';
 
-const EXT_MAP: Record<string, string> = {
+const EXT_TO_ICON: Record<string, FileIconName> = {
   jpg: 'image', jpeg: 'image', png: 'image', gif: 'image', webp: 'image', svg: 'image',
-  mp4: 'video', mov: 'video', avi: 'video', mkv: 'video', webm: 'video',
-  mp3: 'audio', wav: 'audio', flac: 'audio', aac: 'audio',
-  pdf: 'pdf', zip: 'zip', rar: 'zip', '7z': 'zip', tar: 'zip', gz: 'zip',
-  js: 'code', ts: 'code', py: 'code', html: 'code', css: 'code', json: 'code',
-  txt: 'text', md: 'text', csv: 'text', log: 'text',
+  mp4: 'film', mov: 'film', avi: 'film', mkv: 'film', webm: 'film',
+  mp3: 'music', wav: 'music', flac: 'music', aac: 'music',
+  pdf: 'file-text', doc: 'file-text', docx: 'file-text',
+  zip: 'archive', rar: 'archive', '7z': 'archive', tar: 'archive', gz: 'archive',
+  js: 'code', ts: 'code', py: 'code', html: 'code', css: 'code', json: 'code', java: 'code',
+  txt: 'file-text', md: 'file-text', csv: 'file-text', log: 'file-text',
 };
 
-export function getFileIcon(filename: string): string {
+export function getFileIconName(filename: string): FileIconName {
   const ext = filename.split('.').pop()?.toLowerCase() || '';
-  return FILE_ICONS[EXT_MAP[ext] || 'default'];
+  return EXT_TO_ICON[ext] || 'file';
 }
+
+// Keep backward compat — used nowhere now but safe to leave
+export function getFileIcon(filename: string): string {
+  const map: Record<FileIconName, string> = {
+    image: '🖼️', film: '🎬', music: '🎵', 'file-text': '📄',
+    archive: '📦', code: '💻', file: '📎',
+  };
+  return map[getFileIconName(filename)];
+}
+

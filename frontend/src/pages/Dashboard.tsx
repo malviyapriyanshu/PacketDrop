@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
+import { motion } from 'framer-motion';
 import Header from '../components/Header';
-import QRCodeCard from '../components/Sidebar/QRCodeCard';
-import ConnectionInfoCard from '../components/Sidebar/ConnectionInfoCard';
-import QuickStatsCard from '../components/Sidebar/QuickStatsCard';
+import ConnectStrip from '../components/Sidebar/ConnectStrip';
 import DropZone from '../components/DropZone';
 import ProgressList from '../components/ProgressList';
 import FileGrid from '../components/FileGrid';
@@ -12,6 +11,21 @@ import { getFiles, getHistory, clearHistory, deleteFile, uploadFile, getServerIn
 import { connectWebSocket, onProgress, onComplete } from '../services/websocket';
 import { formatBytes } from '../utils/format';
 import type { FileMetadata, TransferHistory, UploadState, ServerInfo } from '../types';
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.06,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 15 },
+  show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 280, damping: 24 } },
+};
 
 export default function Dashboard() {
   const [info, setInfo] = useState<ServerInfo | null>(null);
@@ -85,7 +99,7 @@ export default function Dashboard() {
   const handleClearHistory = useCallback(async () => {
     try {
       await clearHistory();
-      addToast('Transfer history cleared', 'info');
+      addToast('History cleared', 'info');
       refreshHistory();
     } catch {
       addToast('Failed to clear history', 'error');
@@ -94,27 +108,35 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen">
-      <div className="relative z-10 mx-auto w-full max-w-[1360px] px-4 pb-10 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-[800px] px-4 pb-12 sm:px-6">
         <Header />
 
-        <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
-          <main className="flex min-w-0 flex-col gap-6">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+          className="flex flex-col gap-6"
+        >
+          <motion.div variants={itemVariants}>
+            <ConnectStrip info={info} />
+          </motion.div>
+          <motion.div variants={itemVariants}>
             <DropZone onFiles={handleFiles} />
+          </motion.div>
+          <motion.div variants={itemVariants}>
             <ProgressList uploads={uploads} />
+          </motion.div>
+          <motion.div variants={itemVariants}>
             <FileGrid files={files} onDelete={handleDelete} />
+          </motion.div>
+          <motion.div variants={itemVariants}>
             <HistoryTable history={history} onClear={handleClearHistory} />
-          </main>
+          </motion.div>
+        </motion.div>
 
-          <aside className="flex flex-col gap-4 lg:sticky lg:top-6">
-            <QRCodeCard info={info} />
-            <ConnectionInfoCard info={info} />
-            <QuickStatsCard files={files} history={history} />
-          </aside>
-        </div>
-
-        <footer className="mt-10 border-t border-slate-200 pt-5 text-center">
-          <p className="text-xs font-medium tracking-wide text-slate-500">
-            PacketDrop v1.0 - Local Network File Transfer
+        <footer className="mt-10 pt-6 text-center">
+          <p className="text-[11px] tracking-wide text-[var(--text-3)]" style={{ fontFamily: 'var(--font-mono)' }}>
+            PacketDrop
           </p>
         </footer>
       </div>
