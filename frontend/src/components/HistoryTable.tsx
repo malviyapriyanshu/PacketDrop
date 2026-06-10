@@ -1,7 +1,7 @@
-import { motion } from 'framer-motion';
-import { Clock3, ShieldCheck, History, Trash2 } from 'lucide-react';
+import { History } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import type { TransferHistory } from '../types';
-import { getFileIcon, formatBytes } from '../utils/format';
+import { formatBytes } from '../utils/format';
 
 interface Props {
   history: TransferHistory[];
@@ -11,85 +11,87 @@ interface Props {
 export default function HistoryTable({ history, onClear }: Props) {
   return (
     <section>
-      <div className="section-header">
-        <div>
-          <h2 className="section-heading">Transfer History</h2>
-          <p className="section-sub">Log of network activity and checksum verification</p>
-        </div>
+      <div className="mb-3 flex items-center justify-between">
+        <h2 className="text-[13px] font-semibold uppercase tracking-wider text-[var(--text-3)]">
+          Transfer History
+        </h2>
         <div className="flex items-center gap-3">
-          <span className="inline-flex h-8 items-center whitespace-nowrap rounded-lg border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-600 dark:border-white/[0.06] dark:bg-white/[0.02] dark:text-slate-300">
-            {history.length} transfer{history.length !== 1 ? 's' : ''}
+          <span className="text-[12px] tabular-nums text-[var(--text-3)]">
+            {history.length}
           </span>
           {history.length > 0 && (
-            <button
+            <motion.button
               onClick={onClear}
-              className="btn-secondary h-8 px-3 text-red-600 hover:border-red-200 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:border-red-500/30 dark:hover:bg-red-500/10"
-              title="Clear History"
+              whileTap={{ scale: 0.95 }}
+              className="text-[12px] font-medium text-[var(--danger)] transition-opacity hover:opacity-70 cursor-pointer"
             >
-              <Trash2 className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Clear</span>
-            </button>
+              Clear
+            </motion.button>
           )}
         </div>
       </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="glass-card overflow-hidden"
-      >
+      <div className="card overflow-hidden">
         {history.length === 0 ? (
-          <div className="flex min-h-[176px] flex-col items-center justify-center px-6 py-12 text-center">
-            <div className="icon-tile mb-3 h-11 w-11 text-slate-500 dark:border-white/[0.04] dark:bg-white/[0.02] dark:text-slate-400">
-              <History className="h-5 w-5" />
-            </div>
-            <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">No transfers yet</p>
-            <p className="mt-1 text-xs font-medium text-slate-500 dark:text-slate-400">Activity appears here after the first upload.</p>
-          </div>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="flex flex-col items-center justify-center px-6 py-12 text-center"
+          >
+            <History className="mb-2 h-5 w-5 text-[var(--text-3)]" />
+            <p className="text-[13px] text-[var(--text-2)]">No transfers yet</p>
+          </motion.div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[760px] text-left">
+            <table className="w-full min-w-[640px] text-left">
               <thead>
-                <tr className="border-b border-slate-200 bg-slate-50 dark:border-white/[0.06] dark:bg-black/20">
-                  <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">File</th>
-                  <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Size</th>
-                  <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">From</th>
-                  <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Time</th>
-                  <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Checksum</th>
+                <tr className="border-b border-[var(--border)] bg-[var(--surface-raised)]">
+                  <th className="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--text-3)]">File</th>
+                  <th className="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--text-3)]">Size</th>
+                  <th className="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--text-3)]">From</th>
+                  <th className="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--text-3)]">Time</th>
+                  <th className="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--text-3)]">Checksum</th>
                 </tr>
               </thead>
               <tbody>
-                {history.map((h, i) => (
-                  <tr key={i} className="border-b border-slate-100 transition-colors last:border-0 hover:bg-slate-50 dark:border-white/[0.04] dark:hover:bg-white/[0.02]">
-                    <td className="whitespace-nowrap px-4 py-3.5">
-                      <div className="flex items-center gap-2.5">
-                        <span className="text-lg">{getFileIcon(h.filename)}</span>
-                        <span className="max-w-[260px] truncate text-[13px] font-semibold text-slate-800 dark:text-slate-200" title={h.filename}>{h.filename}</span>
-                      </div>
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-3.5 text-[13px] tabular-nums text-slate-600 dark:text-slate-400">{formatBytes(h.size)}</td>
-                    <td className="whitespace-nowrap px-4 py-3.5">
-                      <code className="rounded-md border border-slate-200 bg-slate-50 px-2 py-1 font-mono text-[11px] text-slate-600 dark:border-white/[0.06] dark:bg-black/20 dark:text-slate-300">{h.senderIp}</code>
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-3.5 text-[13px] text-slate-600 dark:text-slate-400">
-                      <span className="flex items-center gap-1.5">
-                        <Clock3 className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
+                <AnimatePresence initial={false}>
+                  {history.map((h, i) => (
+                    <motion.tr
+                      key={h.checksum + i}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, x: -15 }}
+                      transition={{ type: 'spring', stiffness: 350, damping: 28 }}
+                      layout
+                      className="border-b border-[var(--border)] last:border-0 transition-colors hover:bg-[var(--surface-raised)]"
+                    >
+                      <td className="max-w-[220px] truncate whitespace-nowrap px-4 py-2.5 text-[13px] font-medium text-[var(--text)]" title={h.filename}>
+                        {h.filename}
+                      </td>
+                      <td className="whitespace-nowrap px-4 py-2.5 text-[13px] tabular-nums text-[var(--text-2)]">
+                        {formatBytes(h.size)}
+                      </td>
+                      <td className="whitespace-nowrap px-4 py-2.5">
+                        <code className="rounded bg-[var(--surface-raised)] px-1.5 py-0.5 text-[11px] text-[var(--text-2)]" style={{ fontFamily: 'var(--font-mono)' }}>
+                          {h.senderIp}
+                        </code>
+                      </td>
+                      <td className="whitespace-nowrap px-4 py-2.5 text-[13px] text-[var(--text-2)]">
                         {new Date(h.timestamp).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                      </span>
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-3.5">
-                      <span className="flex items-center gap-1.5 text-emerald-700 dark:text-emerald-400">
-                        <ShieldCheck className="h-3.5 w-3.5" />
-                        <code className="max-w-[100px] truncate font-mono text-[11px]" title={h.checksum}>{h.checksum.slice(0, 12)}...</code>
-                      </span>
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                      <td className="whitespace-nowrap px-4 py-2.5">
+                        <code className="text-[11px] text-[var(--success)]" style={{ fontFamily: 'var(--font-mono)' }} title={h.checksum}>
+                          {h.checksum.slice(0, 16)}…
+                        </code>
+                      </td>
+                    </motion.tr>
+                  ))}
+                </AnimatePresence>
               </tbody>
             </table>
           </div>
         )}
-      </motion.div>
+      </div>
     </section>
   );
 }
